@@ -1,5 +1,6 @@
 from typing import List, Tuple
 import json
+import sys
 
 import flwr as fl
 from flwr.common import Metrics
@@ -31,7 +32,7 @@ strategy = fl.server.strategy.FedAvg(
 
 # Start Flower server
 fl.server.start_server(
-    server_address='192.168.2.214:31415',
+    server_address=sys.argv[1],
     config=fl.server.ServerConfig(num_rounds=1),
     strategy=strategy,
 )
