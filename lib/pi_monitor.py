@@ -25,7 +25,7 @@ class PiMonitor():
 
     # returns power in W
     def power(self) -> float:
-        return round(self.voltage() * self.current() * 1000, 2)
+        return round(self.voltage() * (self.current() / 1000), 2)
 
     # returns frequency in kHz
     def frequency(self) -> int:
