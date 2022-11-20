@@ -105,7 +105,7 @@ class FlowerClient(fl.client.NumPyClient):
         starttime = time.time()
         thread = Thread(target=self.train)
         thread.start()
-        while not thread.is_alive():
+        while thread.is_alive():
             power_consumption.append(monitor.power())
             cpu_util.append(monitor.cpu_util())
         runtime = time.time() - starttime
