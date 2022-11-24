@@ -14,7 +14,7 @@ def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Aggregate and return custom metric (weighted average)
     return {'accuracy': sum(accuracies) / sum(examples)}
 
-def fit_metrics_aggregation(metrics: List[Tuple[int, Metrics]]) -> Metrics:
+def post_fit(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     print('==========\nfit_round metrics:')
     for key, value in metrics[0][1].items():
         value_deserialized = json.loads(str(value))
@@ -26,7 +26,7 @@ strategy = fl.server.strategy.FedAvg(
                 min_fit_clients=1,
                 min_evaluate_clients=1,
                 min_available_clients=1,
-                fit_metrics_aggregation_fn=fit_metrics_aggregation,
+                fit_metrics_aggregation_fn=post_fit,
                 evaluate_metrics_aggregation_fn=weighted_average,
            )
 

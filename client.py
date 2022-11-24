@@ -101,17 +101,14 @@ class FlowerClient(fl.client.NumPyClient):
         self.set_parameters(parameters)
         monitor = PiMonitor()
         power_consumption = []
-        cpu_util = []
         starttime = time.time()
         thread = Thread(target=self.train)
         thread.start()
         while thread.is_alive():
             power_consumption.append(monitor.power())
-            cpu_util.append(monitor.cpu_util())
         runtime = time.time() - starttime
         monitor_dict = {
                 'power_consumption': json.dumps(power_consumption),
-                'cpu_util': json.dumps(cpu_util),
                 'runtime': str(runtime)
         }
         return self.get_parameters(config={}), len(trainloader.dataset), monitor_dict
