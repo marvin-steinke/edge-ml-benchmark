@@ -1,31 +1,47 @@
-from lib import SDL_Pi_SunControl as sdl
 import psutil
 from cpufreq import cpuFreq
+# support either SunControl or ina219 sensors
+sc_loaded = False
+try:
+    from lib import SDL_Pi_SunControl as sdl
+    sc_loaded = True
+except ImportError:
+    from ina219 import INA219
 
 class PiMonitor():
     def __init__(self) -> None:
-        # init SunControl
-        self.sc = sdl.SDL_Pi_SunControl(
-                INA3221Address = 0x40,
-                USBControlEnable = 26,
-                USBControlControl = 21,
-                WatchDog_Done = 13,
-                WatchDog_Wake = 16
-        )
+        # init SunControl or ina219
+        if sc_loaded:
+            self.sc = sdl.SDL_Pi_SunControl(
+                    INA3221Address = 0x40,
+                    USBControlEnable = 26,
+                    USBControlControl = 21,
+                    WatchDog_Done = 13,
+                    WatchDog_Wake = 16
+            )
+        else:
+            self.ina = INA219(0.1, address=0x45)
+            self.ina.configure()
         self.cpu = cpuFreq()
         self.available_frequencies = self.cpu.available_frequencies
 
     # returns current in mA
     def current(self) -> float:
-        return round(self.sc.readChannelCurrentmA(sdl.SunControl_OUTPUT_CHANNEL), 2)
+        current = (self.sc.readChannelCurrentmA(sdl.SunControl_OUTPUT_CHANNEL) if sc_loaded
+                   else self.ina.current())
+        return round(current, 2)
 
     # returns voltage in V
     def voltage(self) -> float:
-        return round(self.sc.readChannelVoltageV(sdl.SunControl_OUTPUT_CHANNEL), 2)
+        voltage = (self.sc.readChannelVoltageV(sdl.SunControl_OUTPUT_CHANNEL) if sc_loaded
+                   else self.ina.voltage())
+        return round(voltage, 2)
 
     # returns power in W
     def power(self) -> float:
-        return round(self.voltage() * (self.current() / 1000), 2)
+        power = (self.voltage() * (self.current() / 1000) if sc_loaded
+                 else self.ina.power() / 1000)
+        return round(power, 2)
 
     # returns frequency in kHz
     def frequency(self) -> int:
