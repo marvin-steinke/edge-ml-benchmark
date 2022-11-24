@@ -73,7 +73,8 @@ def load_data():
     trf = Compose([ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     trainset = CIFAR10("./data", train=True, download=True, transform=trf)
     testset = CIFAR10("./data", train=False, download=True, transform=trf)
-    return DataLoader(trainset, batch_size=32, shuffle=True), DataLoader(testset)
+    batch_size = int(sys.argv[2])
+    return DataLoader(trainset, batch_size=batch_size, shuffle=True), DataLoader(testset)
 
 
 # #############################################################################
@@ -109,7 +110,9 @@ class FlowerClient(fl.client.NumPyClient):
         runtime = time.time() - starttime
         monitor_dict = {
                 'power_consumption': json.dumps(power_consumption),
-                'runtime': str(runtime)
+                'runtime': str(runtime),
+                'frequency': sys.argv[3],
+                'batch_size': sys.argv[2]
         }
         return self.get_parameters(config={}), len(trainloader.dataset), monitor_dict
 
