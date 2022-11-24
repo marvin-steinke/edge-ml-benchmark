@@ -1,17 +1,19 @@
 import psutil
 from cpufreq import cpuFreq
-# support either SunControl or ina219 sensors
-sc_loaded = False
 try:
     from lib import SDL_Pi_SunControl as sdl
-    sc_loaded = True
 except ImportError:
+    pass
+try:
     from ina219 import INA219
+except ImportError:
+    pass
 
 class PiMonitor():
     def __init__(self) -> None:
-        # init SunControl or ina219
-        if sc_loaded:
+        # support either SunControl or ina219 sensors
+        self.sc_loaded = True
+        try:
             self.sc = sdl.SDL_Pi_SunControl(
                     INA3221Address = 0x40,
                     USBControlEnable = 26,
@@ -19,7 +21,8 @@ class PiMonitor():
                     WatchDog_Done = 13,
                     WatchDog_Wake = 16
             )
-        else:
+        except:
+            self.sc_loaded = False
             self.ina = INA219(0.1, address=0x45)
             self.ina.configure()
         self.cpu = cpuFreq()
@@ -27,19 +30,19 @@ class PiMonitor():
 
     # returns current in mA
     def current(self) -> float:
-        current = (self.sc.readChannelCurrentmA(sdl.SunControl_OUTPUT_CHANNEL) if sc_loaded
-                   else self.ina.current())
+        current = (self.sc.readChannelCurrentmA(sdl.SunControl_OUTPUT_CHANNEL)
+                   if self.sc_loaded else self.ina.current())
         return round(current, 2)
 
     # returns voltage in V
     def voltage(self) -> float:
-        voltage = (self.sc.readChannelVoltageV(sdl.SunControl_OUTPUT_CHANNEL) if sc_loaded
-                   else self.ina.voltage())
+        voltage = (self.sc.readChannelVoltageV(sdl.SunControl_OUTPUT_CHANNEL)
+                   if self.sc_loaded else self.ina.voltage())
         return round(voltage, 2)
 
     # returns power in W
     def power(self) -> float:
-        power = (self.voltage() * (self.current() / 1000) if sc_loaded
+        power = (self.voltage() * (self.current() / 1000) if self.sc_loaded
                  else self.ina.power() / 1000)
         return round(power, 2)
 
