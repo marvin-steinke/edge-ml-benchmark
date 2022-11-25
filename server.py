@@ -32,8 +32,8 @@ def post_fit(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     #        case 'batch_size':
     #            batch_size = str(value)
     mean_consumption = mean(power_consumption)
-    with open(f'plotdata/{batch_size}.csv', 'a') as f:
-        if not f.read(1):
+    with open(f'plotdata/{batch_size}.csv', 'r+') as f:
+        if not f.read():
             f.write('runtime,mean_consumption,frequency\n')
         f.write(f'{runtime},{mean_consumption},{frequency}\n')
 
