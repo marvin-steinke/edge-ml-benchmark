@@ -107,6 +107,7 @@ class FlowerClient(fl.client.NumPyClient):
         thread.start()
         while thread.is_alive():
             power_consumption.append(monitor.power())
+            time.sleep(1)
         runtime = time.time() - starttime
         monitor_dict = {
                 'power_consumption': json.dumps(power_consumption),
