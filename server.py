@@ -16,25 +16,26 @@ def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     return {'accuracy': sum(accuracies) / sum(examples)}
 
 def post_fit(metrics: List[Tuple[int, Metrics]]) -> Metrics:
-    power_consumption = []
-    runtime = frequency = batch_size = ''
-    for key, value in metrics[0][1].items():
-        match key:
-            case 'power_consumption':
-                power_consumption = json.loads(str(value))
-            case 'runtime':
-                runtime = str(value)
-            case 'frequency':
-                frequency = str(value)
-            case 'batch_size':
-                batch_size = str(value)
+    m = metrics[0][1]
+    power_consumption = json.loads(str(m['power_consumption']))
+    runtime = str(m['runtime'])
+    frequency = str(m['frequency'])
+    batch_size = str(m['batch_size'])
+    #for key, value in metrics[0][1].items():
+    #    match key:
+    #        case 'power_consumption':
+    #            power_consumption = json.loads(str(value))
+    #        case 'runtime':
+    #            runtime = str(value)
+    #        case 'frequency':
+    #            frequency = str(value)
+    #        case 'batch_size':
+    #            batch_size = str(value)
     mean_consumption = mean(power_consumption)
     with open(f'plotdata/{batch_size}.csv', 'a') as f:
-        if f.read(1):
-            f.write(f'{runtime},{mean_consumption},{frequency}\n')
-        else:
+        if not f.read(1):
             f.write('runtime,mean_consumption,frequency\n')
-            pass
+        f.write(f'{runtime},{mean_consumption},{frequency}\n')
 
 # Define strategy
 strategy = fl.server.strategy.FedAvg(
