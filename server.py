@@ -22,16 +22,6 @@ def post_fit(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     runtime = round(float(m['runtime']))
     frequency = str(m['frequency'])
     batch_size = str(m['batch_size'])
-    #for key, value in metrics[0][1].items():
-    #    match key:
-    #        case 'power_consumption':
-    #            power_consumption = json.loads(str(value))
-    #        case 'runtime':
-    #            runtime = str(value)
-    #        case 'frequency':
-    #            frequency = str(value)
-    #        case 'batch_size':
-    #            batch_size = str(value)
     mean_consumption = round(mean(power_consumption), 2)
     path = f'plotdata/{batch_size}.csv'
     with open(path, 'a') as f:
