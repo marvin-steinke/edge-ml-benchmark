@@ -1,6 +1,7 @@
 from typing import List, Tuple
 from statistics import mean
 import json
+import os
 import sys
 
 import flwr as fl
@@ -18,7 +19,7 @@ def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
 def post_fit(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     m = metrics[0][1]
     power_consumption = json.loads(str(m['power_consumption']))
-    runtime = str(m['runtime'])
+    runtime = round(float(m['runtime']))
     frequency = str(m['frequency'])
     batch_size = str(m['batch_size'])
     #for key, value in metrics[0][1].items():
@@ -31,9 +32,10 @@ def post_fit(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     #            frequency = str(value)
     #        case 'batch_size':
     #            batch_size = str(value)
-    mean_consumption = mean(power_consumption)
-    with open(f'plotdata/{batch_size}.csv', 'r+') as f:
-        if not f.read():
+    mean_consumption = round(mean(power_consumption), 2)
+    path = f'plotdata/{batch_size}.csv'
+    with open(path, 'a') as f:
+        if os.stat(path).st_size == 0:
             f.write('runtime,mean_consumption,frequency\n')
         f.write(f'{runtime},{mean_consumption},{frequency}\n')
 
