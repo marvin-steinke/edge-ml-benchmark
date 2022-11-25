@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from statistics import mean
 import json
 import sys
 
@@ -15,11 +16,25 @@ def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     return {'accuracy': sum(accuracies) / sum(examples)}
 
 def post_fit(metrics: List[Tuple[int, Metrics]]) -> Metrics:
-    print('==========\nfit_round metrics:')
+    power_consumption = []
+    runtime = frequency = batch_size = ''
     for key, value in metrics[0][1].items():
-        value_deserialized = json.loads(str(value))
-        print(f'\t{key}: {value_deserialized}')
-    print('==========')
+        match key:
+            case 'power_consumption':
+                power_consumption = json.loads(str(value))
+            case 'runtime':
+                runtime = str(value)
+            case 'frequency':
+                frequency = str(value)
+            case 'batch_size':
+                batch_size = str(value)
+    mean_consumption = mean(power_consumption)
+    with open(f'plots/{batch_size}.csv', 'a') as f:
+        if f.read(1):
+            f.write(f'{runtime},{mean_consumption},{frequency}\n')
+        else:
+            f.write('runtime,mean_consumption,frequency\n')
+            pass
 
 # Define strategy
 strategy = fl.server.strategy.FedAvg(
