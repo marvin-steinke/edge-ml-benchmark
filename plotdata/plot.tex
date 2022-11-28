@@ -1,0 +1,61 @@
+\documentclass{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+
+\begin{document}
+
+\begin{tikzpicture}
+    \begin{axis}[
+        title={\vspace{1cm}},
+        xlabel={Frequency in MHz},
+        %xtick=data,
+        ylabel={Mean Power Consumption in W},
+        %ytick=data,
+        ymajorgrids=true,
+        grid style=dashed,
+        cycle list name=color list,
+        legend pos=outer north east,
+        %height=8cm,
+        %width=50cm,
+        %scale only axis=true,
+    ]
+    \addlegendimage{empty legend}
+    \addlegendentry{\hspace{-.6cm}Batch Size}
+    \addplot table[x=frequency,y=mean_consumption,col sep=comma]{8.csv};
+    \addlegendentry{8}
+    \addplot table[x=frequency,y=mean_consumption,col sep=comma]{16.csv};
+    \addlegendentry{16}
+    \addplot table[x=frequency,y=mean_consumption,col sep=comma]{32.csv};
+    \addlegendentry{32}
+    \addplot table[x=frequency,y=mean_consumption,col sep=comma]{48.csv};
+    \addlegendentry{48}
+    \addplot table[x=frequency,y=mean_consumption,col sep=comma]{64.csv};
+    \addlegendentry{64}
+    \end{axis}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+    \begin{axis}[
+        title={},
+        xlabel={Frequency in MHz},
+        %xtick=data,
+        ylabel={Runtime in s},
+        %ytick=data,
+        ymajorgrids=true,
+        grid style=dashed,
+        cycle list name=color list,
+        %legend pos=outer north east,
+        %height=8cm,
+        %width=50cm,
+        %scale only axis=true,
+    ]
+    \addplot table[x=frequency,y=runtime,col sep=comma]{8.csv};
+    \addplot table[x=frequency,y=runtime,col sep=comma]{16.csv};
+    \addplot table[x=frequency,y=runtime,col sep=comma]{32.csv};
+    \addplot table[x=frequency,y=runtime,col sep=comma]{48.csv};
+    \addplot table[x=frequency,y=runtime,col sep=comma]{64.csv};
+    \end{axis}
+\end{tikzpicture}
+\hspace{.5cm}
+
+\end{document}
